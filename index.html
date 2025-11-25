@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Chat To Adlan M.R</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      transition: background 0.2s ease;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f8f8;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    :root {
+      --color-primary: #075E54; 
+      --color-pesan-ku: #dcf8c6;
+      --color-selected: #34b7f1; 
+    }
+
+    header {
+      background: var(--color-primary);
+      color: white;
+      padding: 0.8rem 1rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    #user-info { font-size: 1.1rem; }
+    
+    #header-actions {
+        display: flex;
+        align-items: center;
+    }
+    
+    #login-btn, #logout-btn {
+        background: white;
+        color: var(--color-primary);
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    #login-btn:hover, #logout-btn:hover { opacity: 0.9; }
+
+    .header-action-btn {
+        background: none;
+        color: white;
+        border: 2px solid white;
+        padding: 5px 10px;
+        margin-left: 8px; 
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .header-action-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    #chat-box {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      scroll-behavior: smooth;
+      background: #e5ddd5; 
+      background-image: url("https://i.ibb.co/4YZRcdt/wa-bg.png");
+      background-size: 300px;
+    }
+
+    #chat-box::-webkit-scrollbar { display: none; }
+
+    .pesan-umum {
+      max-width: 80%;
+      padding: 0.6rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1.3;
+      position: relative;
+      word-wrap: break-word;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+      transition: box-shadow 0.2s ease, border 0.2s ease; 
+      border: 1px solid transparent; 
+    }
+
+    .pesan-ku { 
+      align-self: flex-end;
+      background: var(--color-pesan-ku);
+      color: #111;
+      border-top-right-radius: 0;
+    }
+
+    .pesan-lawan { 
+      align-self: flex-start;
+      background: #fff;
+      color: #111;
+      border-top-left-radius: 0;
+    }
+
+    .pesan-selected {
+        border: 1px solid var(--color-selected);
+        box-shadow: 0 0 5px var(--color-selected);
+    }
+    
+    .pesan-waktu {
+        text-align: right;
+        margin-top: 5px;
+        font-size: 0.7rem;
+        color: #999;
+        opacity: 0.8;
+    }
+    .pesan-lawan .sender-name {
+        font-weight: bold;
+        color: var(--color-primary);
+        font-size: 0.8rem;
+        margin-bottom: 3px;
+    }
+    
+    .reply-bubble {
+      font-size: 0.8rem;
+      color: #555;
+      border-left: 3px solid #34b7f1;
+      padding-left: 4px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    #reply-preview {
+      display: none;
+      background: #f0f0f0;
+      border-left: 4px solid #34b7f1;
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      color: #333;
+      margin: 0 0.5rem;
+      border-radius: 4px;
+      width: 100%;
+    }
+
+    #reply-preview span { font-weight: bold; color: var(--color-primary); }
+
+    #reply-preview button {
+      float: right;
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #888;
+    }
+    
+    #chat-form {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        padding: 0.5rem;
+        background: #f0f0f0;
+        border-top: 1px solid #ddd;
+        gap: 0.5rem;
+    }
+    .input-row { display: flex; width: 100%; align-items: flex-end; }
+    textarea {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 25px;
+      background: #fff;
+      color: #111;
+      font-size: 1rem;
+      outline: none;
+      resize: none;
+      max-height: 100px;
+      line-height: 1.4;
+      overflow-y: auto;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    #kirim-btn {
+      margin-left: 0.5rem;
+      background: #25d366;
+      color: white;
+      border: none;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    #kirim-btn:disabled { background: #cccccc; }
+    
+    #custom-confirm-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        display: none; 
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(2px);
+    }
+    #custom-confirm-box {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        width: 300px;
+        text-align: center;
+    }
+    #custom-confirm-box p {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1rem;
+        color: #333;
+    }
+    .confirm-actions button {
+        padding: 10px 20px;
+        margin: 0 8px;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        min-width: 80px;
+    }
+    #confirm-yes { background: #dc3545; color: white; }
+    #confirm-no { background: #e0e0e0; color: #333; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div id="user-info">Harap Login</div>
+    <div id="header-actions">
+      <button id="login-btn">Login Google</button>
+      
+      <button id="header-delete-btn" class="header-action-btn" style="display:none;">🗑 Hapus</button>
+      <button id="header-reply-btn" class="header-action-btn" style="display:none;">↩ Balas</button>
+
+      <button id="logout-btn" style="display: none;">Logout</button>
+    </div>
+  </header>
+  <main id="chat-box"></main>
+  
+  <form id="chat-form" autocomplete="off">
+    <div id="reply-preview"></div> 
+    
+    <div class="input-row"> 
+      <textarea id="message-input" placeholder="Ketik pesan..." rows="1" disabled></textarea>
+      <button type="submit" id="kirim-btn" disabled>➤</button>
+    </div>
+  </form>
+
+  <div id="custom-confirm-overlay">
+    <div id="custom-confirm-box">
+      <p id="confirm-message">Anda yakin ingin menghapus pesan ini?</p>
+      <div class="confirm-actions">
+        <button id="confirm-no">Tidak</button>
+        <button id="confirm-yes">Ya</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD5t7H6wFzO-qb07p6x7Q0elWwFCjlzhqg",
+      authDomain: "chat-51d8c.firebaseapp.com",
+      databaseURL: "https://chat-51d8c-default-rtdb.firebaseio.com",
+      projectId: "chat-51d8c",
+      storageBucket: "chat-51d8c.firebasestorage.app",
+      messagingSenderId: "317523793766",
+      appId: "1:317523793766:web:6c4c45b4a88a3e01aadaa7"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth(); 
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    const USER_ID_PUSAT = "PUSAT_ADMIN_A"; 
+    const NAMA_PUSAT = "Adlan M.R"; 
+
+    const chatBox = document.getElementById("chat-box");
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("message-input");
+    const kirimBtn = document.getElementById("kirim-btn");
+    const userInfo = document.getElementById("user-info");
+    const loginBtn = document.getElementById("login-btn");
+    const logoutBtn = document.getElementById("logout-btn");
+    const replyPreview = document.getElementById("reply-preview"); 
+    
+    const confirmOverlay = document.getElementById("custom-confirm-overlay");
+    const confirmMessage = document.getElementById("confirm-message");
+    const confirmYes = document.getElementById("confirm-yes");
+    const confirmNo = document.getElementById("confirm-no");
+    
+    const headerDeleteBtn = document.getElementById("header-delete-btn");
+    const headerReplyBtn = document.getElementById("header-reply-btn");
+    
+    let currentUser = null; 
+    let replyTo = null; 
+    let selectedMessageKey = null; 
+    let messageDataMap = {}; 
+
+    input.addEventListener("input", () => {
+      input.style.height = "auto";
+      input.style.height = (input.scrollHeight) + "px";
+    });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
+    });
+    
+    function showCustomConfirm(message, callback) {
+        confirmMessage.textContent = message;
+        confirmOverlay.style.display = 'flex';
+        
+        const handleConfirm = (isConfirmed) => {
+            confirmOverlay.style.display = 'none';
+            confirmYes.onclick = null;
+            confirmNo.onclick = null; 
+            callback(isConfirmed);
+        };
+
+        confirmYes.onclick = () => handleConfirm(true);
+        confirmNo.onclick = () => handleConfirm(false);
+    }
+    
+    function updateHeaderActions(data, isSelected) {
+        if (!currentUser) return;
+        
+        const isPesanKu = data && data.pengirim_id === currentUser.uid;
+
+        if (isSelected) {
+            headerDeleteBtn.style.display = isPesanKu ? 'block' : 'none'; 
+            headerReplyBtn.style.display = 'block';
+            logoutBtn.style.display = 'none'; 
+        } else {
+            headerDeleteBtn.style.display = 'none';
+            headerReplyBtn.style.display = 'none';
+            logoutBtn.style.display = 'block'; 
+        }
+    }
+    
+    function handleMessageSelection(key, data) {
+        if (selectedMessageKey) {
+            const prevEl = chatBox.querySelector(`[data-key="${selectedMessageKey}"]`);
+            if (prevEl) prevEl.classList.remove('pesan-selected');
+        }
+
+        const isDeselected = selectedMessageKey === key;
+        
+        if (isDeselected) {
+            selectedMessageKey = null;
+            updateHeaderActions(null, false);
+        } else {
+            selectedMessageKey = key;
+            const currentEl = chatBox.querySelector(`[data-key="${key}"]`);
+            if (currentEl) currentEl.classList.add('pesan-selected');
+            updateHeaderActions(data, true);
+        }
+    }
+
+    headerDeleteBtn.addEventListener("click", () => {
+        if (!selectedMessageKey) return;
+        
+        showCustomConfirm("Anda yakin ingin menghapus pesan ini?", (isConfirmed) => {
+            if (isConfirmed) {
+                db.ref("PesanMasuk").child(selectedMessageKey).remove();
+                handleMessageSelection(selectedMessageKey, null); 
+            }
+        });
+    });
+
+    headerReplyBtn.addEventListener("click", () => {
+        if (!selectedMessageKey) return;
+        
+        const data = messageDataMap[selectedMessageKey];
+        if (!data) return;
+
+        replyTo = {
+            nama: data.pengirim_id === USER_ID_PUSAT ? NAMA_PUSAT : "Anda", 
+            teks: data.teks
+        };
+        
+        replyPreview.innerHTML = "";
+        const span = document.createElement("span");
+        span.textContent = replyTo.nama;
+        replyPreview.appendChild(span);
+        replyPreview.appendChild(document.createTextNode(": " + data.teks));
+        
+        const cancelBtn = document.createElement("button");
+        cancelBtn.textContent = "✖";
+        cancelBtn.onclick = cancelReply;
+        replyPreview.appendChild(cancelBtn);
+        
+        replyPreview.style.display = "block";
+        input.focus();
+        
+        handleMessageSelection(selectedMessageKey, null); 
+    });
+
+    loginBtn.addEventListener('click', () => { auth.signInWithPopup(provider); });
+    logoutBtn.addEventListener('click', () => { auth.signOut(); });
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            currentUser = user;
+            userInfo.textContent = `Login sebagai: ${currentUser.displayName}`;
+            loginBtn.style.display = 'none';
+            logoutBtn.style.display = 'block';
+            input.disabled = false;
+            kirimBtn.disabled = false;
+            chatBox.innerHTML = '';
+            
+            updateHeaderActions(null, false); 
+            
+            loadMessages();
+        } else {
+            currentUser = null;
+            userInfo.textContent = "Harap Login";
+            loginBtn.style.display = 'block';
+            logoutBtn.style.display = 'none';
+            input.disabled = true;
+            kirimBtn.disabled = true;
+            chatBox.innerHTML = '<div>Silakan login untuk memulai atau melihat chat Anda.</div>';
+            cancelReply();
+            
+            db.ref("PesanMasuk").off();
+        }
+    });
+    
+    function cancelReply() {
+      replyTo = null;
+      replyPreview.style.display = "none";
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const message = input.value.trim();
+      if (!currentUser || message.length === 0) return;
+
+      db.ref("PesanMasuk").push({ 
+          pengirim_id: currentUser.uid,
+          pengirim_nama: currentUser.displayName,
+          teks: message,
+          replyTo: replyTo, 
+          waktu: Date.now()
+      });
+      input.value = "";
+      input.style.height = "auto";
+      cancelReply();
+    });
+
+    function createMessageElement(data, key) {
+        const el = document.createElement("div");
+        
+        const isPesanKu = data.pengirim_id === currentUser.uid;
+        el.className = isPesanKu ? "pesan-ku pesan-umum" : "pesan-lawan pesan-umum";
+        el.dataset.key = key; 
+
+        if (data.replyTo) {
+            const replyEl = document.createElement("div");
+            replyEl.className = "reply-bubble";
+            replyEl.textContent = data.replyTo.nama + ": " + data.replyTo.teks;
+            el.appendChild(replyEl);
+        }
+
+        if (data.pengirim_id === USER_ID_PUSAT) {
+            const namaEl = document.createElement("div");
+            namaEl.className = "sender-name";
+            namaEl.textContent = NAMA_PUSAT; 
+            el.appendChild(namaEl);
+        } else if (data.penerima_id === currentUser.uid && data.pengirim_id === USER_ID_PUSAT) {
+            const namaEl = document.createElement("div");
+            namaEl.className = "sender-name";
+            namaEl.textContent = NAMA_PUSAT; 
+            el.appendChild(namaEl);
+        }
+        
+        const teksEl = document.createElement("div");
+        teksEl.textContent = data.teks;
+        el.appendChild(teksEl);
+        
+        const waktuEl = document.createElement("div");
+        waktuEl.className = "pesan-waktu";
+        if (data.waktu) {
+            const date = new Date(data.waktu);
+            waktuEl.textContent = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+        el.appendChild(waktuEl);
+        
+        el.addEventListener("click", (e) => {
+            const isCurrentlySelected = el.classList.contains('pesan-selected');
+            handleMessageSelection(key, data);
+        });
+        
+        return el;
+    }
+
+    function loadMessages() {
+        if (!currentUser) return;
+        
+        const pesanRef = db.ref("PesanMasuk").orderByChild("waktu").limitToLast(100);
+
+        pesanRef.on("child_added", (snap) => {
+            const data = snap.val();
+            const key = snap.key;
+            
+            const isPesanDariB = data.pengirim_id === currentUser.uid;
+            const isPesanUntukB = data.pengirim_id === USER_ID_PUSAT && data.penerima_id === currentUser.uid;
+            
+            if (isPesanDariB || isPesanUntukB) {
+                messageDataMap[key] = data; 
+                const el = createMessageElement(data, key);
+                chatBox.appendChild(el);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+        
+        db.ref("PesanMasuk").on("child_removed", (snap) => {
+            const key = snap.key;
+            const el = chatBox.querySelector(`[data-key="${key}"]`);
+            if (el) el.remove();
+            
+            delete messageDataMap[key]; 
+            
+            if (selectedMessageKey === key) {
+                selectedMessageKey = null;
+                updateHeaderActions(null, false);
+            }
+        });
+        
+        pesanRef.once("value", () => {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    }
+  </script>
+</body>
+
+</html>
