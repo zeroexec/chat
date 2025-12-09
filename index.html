@@ -4,11 +4,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Chat To Adlan M.R</title>
+  <title>Chat With Velion Company</title>
+  
+  <link rel="icon" href="logo.png" type="image/png">
+  
   <style>
     * {
       box-sizing: border-box;
-      transition: background 0.2s ease;
+      transition: all 0.2s ease; 
     }
 
     html,
@@ -25,20 +28,22 @@
     }
 
     :root {
-      --color-primary: #075E54; 
-      --color-pesan-ku: #dcf8c6;
+      --color-primary: #0084ff; 
+      --color-pesan-ku: #e1ffc7; 
       --color-selected: #34b7f1; 
+      --chat-bg-color: #ffffff; 
+      --button-gradient: linear-gradient(to right, #20c997, #3b82f6);
     }
 
     header {
-      background: var(--color-primary);
-      color: white;
+      background: var(--chat-bg-color); 
+      color: #333; 
       padding: 0.8rem 1rem;
       font-weight: bold;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
     }
     #user-info { font-size: 1.1rem; }
     
@@ -47,21 +52,32 @@
         align-items: center;
     }
     
-    #login-btn, #logout-btn {
-        background: white;
-        color: var(--color-primary);
-        border: none;
+    #login-btn, #logout-btn, #login-bottom-btn {
+        background: var(--button-gradient);
+        color: white; 
+        border: none; 
         padding: 5px 10px;
         border-radius: 5px;
         cursor: pointer;
         font-weight: 600;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
     }
-    #login-btn:hover, #logout-btn:hover { opacity: 0.9; }
+    #login-btn:hover, #logout-btn:hover, #login-bottom-btn:hover { 
+        opacity: 0.9;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+    }
+    #login-bottom-btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+        width: auto;
+        margin-top: 15px;
+    }
+
 
     .header-action-btn {
         background: none;
-        color: white;
-        border: 2px solid white;
+        color: var(--color-primary); 
+        border: 2px solid var(--color-primary); 
         padding: 5px 10px;
         margin-left: 8px; 
         border-radius: 5px;
@@ -70,7 +86,7 @@
         font-size: 0.9rem;
     }
     .header-action-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(0, 132, 255, 0.1);
     }
 
     #chat-box {
@@ -81,9 +97,9 @@
       flex-direction: column;
       gap: 0.5rem;
       scroll-behavior: smooth;
-      background: #e5ddd5; 
-      background-image: url("https://i.ibb.co/4YZRcdt/wa-bg.png");
-      background-size: 300px;
+      
+      background: var(--chat-bg-color); 
+      background-size: cover; 
     }
 
     #chat-box::-webkit-scrollbar { display: none; }
@@ -129,7 +145,7 @@
     }
     .pesan-lawan .sender-name {
         font-weight: bold;
-        color: var(--color-primary);
+        color: var(--color-primary); 
         font-size: 0.8rem;
         margin-bottom: 3px;
     }
@@ -137,7 +153,7 @@
     .reply-bubble {
       font-size: 0.8rem;
       color: #555;
-      border-left: 3px solid #34b7f1;
+      border-left: 3px solid var(--color-selected); 
       padding-left: 4px;
       margin-bottom: 4px;
       white-space: nowrap;
@@ -148,7 +164,7 @@
     #reply-preview {
       display: none;
       background: #f0f0f0;
-      border-left: 4px solid #34b7f1;
+      border-left: 4px solid var(--color-selected); 
       padding: 0.5rem;
       font-size: 0.9rem;
       color: #333;
@@ -157,7 +173,10 @@
       width: 100%;
     }
 
-    #reply-preview span { font-weight: bold; color: var(--color-primary); }
+    #reply-preview span { 
+        font-weight: bold; 
+        color: var(--color-primary); 
+    }
 
     #reply-preview button {
       float: right;
@@ -195,7 +214,7 @@
     }
     #kirim-btn {
       margin-left: 0.5rem;
-      background: #25d366;
+      background: var(--color-primary); 
       color: white;
       border: none;
       width: 45px;
@@ -209,6 +228,14 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     #kirim-btn:disabled { background: #cccccc; }
+
+    .gradient-text {
+        font-weight: bold;
+        color: transparent; 
+        background-image: var(--button-gradient);
+        background-clip: text;
+        -webkit-background-clip: text; 
+    }
     
     #custom-confirm-overlay {
         position: fixed;
@@ -428,6 +455,12 @@
     });
 
     loginBtn.addEventListener('click', () => { auth.signInWithPopup(provider); });
+    document.addEventListener('click', (e) => {
+        if (e.target && e.target.id === 'login-bottom-btn') {
+            auth.signInWithPopup(provider);
+        }
+    });
+
     logoutBtn.addEventListener('click', () => { auth.signOut(); });
 
     auth.onAuthStateChanged((user) => {
@@ -450,7 +483,63 @@
             logoutBtn.style.display = 'none';
             input.disabled = true;
             kirimBtn.disabled = true;
-            chatBox.innerHTML = '<div>Silakan login untuk memulai atau melihat chat Anda.</div>';
+            
+            chatBox.innerHTML = `
+                <div style="text-align: center; padding: 25px; color: #333; max-width: 550px; margin: 30px auto; background: #ffffff; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.08);">
+                    <h3 style="color: #444; margin-top: 0; font-weight: 400; font-size: 1.5rem;">Selamat Datang di Developer Website Chat</h3>
+                    
+                    <div style="background: #e9ecef; padding: 10px; margin: 15px 0; border-radius: 8px; font-weight: 500; font-size: 1.1rem; border: 1px solid #dee2e6;">
+                        <span class="gradient-text">Layanan Pembuatan Website: Sederhana, Fungsional, dan Efisien</span>
+                    </div>
+                    
+                    <p style="text-align: left; margin-bottom: 10px; line-height: 1.6;">
+                        Kami menyediakan layanan pengembangan website yang berfokus pada pemenuhan kebutuhan personal, usaha kecil, sekolah, organisasi, maupun proyek berskala sederhana lainnya. Kami juga menerima pengembangan website dengan spesifikasi khusus, seperti platform catatan online pribadi, landing page bergaya minimalis, halaman portofolio sederhana, blog pribadi, halaman profil usaha kecil, galeri foto ringan, atau halaman informasi acara.
+                    </p>
+                    
+                    <p style="text-align: center; margin: 15px 0 20px 0; font-size: 1.1rem; line-height: 1.4;">
+                        Apapun kebutuhan website Anda, percayakan pada kami
+                        <br>
+                        <span class="gradient-text">kami bisa membuatnya sesuai keinginan Anda.</span>
+                    </p>
+
+                    <ul style="text-align: left; list-style: none; padding-left: 20px; margin-bottom: 15px;">
+                        <li style="text-align: left; margin-bottom: 15px; line-height: 1.2;">
+                            <span style="color: var(--color-primary); font-weight: bold; margin-right: 8px;">•</span> 
+                            <strong>Kemudahan Penggunaan</strong>
+                            <br>
+                            <span style="margin-left: 15px; display: inline-block; color: #555;">Kami memastikan fungsionalitas website mudah dioperasikan.</span>
+                        </li>
+                        <li style="text-align: left; margin-bottom: 15px; line-height: 1.2;">
+                            <span style="color: var(--color-primary); font-weight: bold; margin-right: 8px;">•</span> 
+                            <strong>Manajemen Data Rapi</strong>
+                            <br>
+                            <span style="margin-left: 15px; display: inline-block; color: #555;">Sistem pengelolaan data yang terstruktur dan efisien.</span>
+                        </li>
+                        <li style="text-align: left; margin-bottom: 15px; line-height: 1.2;">
+                            <span style="color: var(--color-primary); font-weight: bold; margin-right: 8px;">•</span> 
+                            <strong>Desain Visual</strong>
+                            <br>
+                            <span style="margin-left: 15px; display: inline-block; color: #555;">Tampilan menarik yang dikustomisasi sesuai spesifikasi klien.</span>
+                        </li>
+                    </ul>
+
+                    <div style="background: #f4f4f7; padding: 15px; margin: 20px 0; border-radius: 8px; text-align: left;">
+                        <p style="font-weight: bold; color: #dc3545; margin-top: 0; margin-bottom: 5px; font-size: 1rem;">
+                            Perhatian: <strong>Keamanan Login Anda Terjamin!</strong>
+                        </p>
+                        <p style="font-size: 0.9rem; margin: 0; line-height: 1.5;">
+                            Kami menggunakan <strong>Firebase Authentication (Auth Google)</strong>. Proses login ditangani sepenuhnya oleh Google. Kami <strong>tidak menerima atau menyimpan</strong> data sensitif, seperti sandi atau detail login Gmail Anda. Kami hanya menggunakan ID unik dan Nama/Email publik dari Google untuk identifikasi chat.
+                        </p>
+                    </div>
+
+                    <p style="font-weight: 500; margin-top: 20px; font-size: 1rem; color: #495057;">
+                        Untuk memulai diskusi mengenai proyek Anda, silakan pilih Login Google di bawah ini.
+                    </p>
+
+                    <button id="login-bottom-btn">Login Google</button>
+                </div>
+            `;
+            
             cancelReply();
             
             db.ref("PesanMasuk").off();
