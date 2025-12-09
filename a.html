@@ -5,8 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Pusat Komunikasi Dua Arah</title>
+  
+  <link rel="icon" href="logo.png" type="image/png">
+  
   <style>
-    /* RESET dan Struktur Dasar */
     * {
       box-sizing: border-box;
       transition: background 0.2s ease, border 0.2s ease;
@@ -24,15 +26,15 @@
       overflow: hidden;
     }
 
-    /* KONSTANTA WARNA */
     :root {
-      --color-primary: #008069; 
+      --color-primary-start: #20c997; 
+      --color-primary-end: #3b82f6; 
       --color-border: #e9edef;
       --color-pesan-ku: #dcf8c6; 
       --color-selected: #34b7f1; 
+      --gradient-primary: linear-gradient(to right, var(--color-primary-start), var(--color-primary-end));
     }
 
-    /* STRUKTUR UTAMA */
     #container-aplikasi {
       display: flex;
       width: 100%;
@@ -40,20 +42,24 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     }
 
-    /* KOLOM KIRI: Daftar Kontak */
     #sidebar-kontak {
       flex: 0 0 350px;
       background: #ffffff;
       border-right: 1px solid var(--color-border);
       display: flex;
       flex-direction: column;
+      
+      background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('bg.png'); 
+      background-size: cover;
+      background-position: center;
     }
 
     #sidebar-header {
       padding: 15px;
-      border-bottom: 2px solid var(--color-primary);
+      border-bottom: 2px solid;
+      border-image: var(--gradient-primary) 1;
       font-weight: 600;
-      color: var(--color-primary);
+      color: #ffffff; 
       font-size: 1.2rem;
       display: flex;
       justify-content: space-between;
@@ -61,16 +67,12 @@
     }
 
     #sidebar-header span {
-        color: #000; 
+        color: #fff; 
         font-weight: 400;
     }
 
-    #header-actions-placeholder { /* Untuk menjaga layout tetap stabil */
-        width: 150px; 
-        text-align: right;
-        font-size: 0.9rem;
-        color: #333;
-        font-weight: normal;
+    #header-actions-placeholder { 
+        display: none; 
     }
 
     #daftar-kontak {
@@ -82,32 +84,32 @@
 
     .kontak-item {
       padding: 12px 15px;
-      border-bottom: 1px solid var(--color-border);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
       cursor: pointer;
     }
     .kontak-item:hover {
-      background: #f0f0f0;
+      background: rgba(255, 255, 255, 0.1);
     }
     .kontak-item.aktif {
-      background: #e0f8f0;
-      border-left: 5px solid var(--color-primary); 
+      background: rgba(255, 255, 255, 0.2); 
+      border-left: 5px solid; 
+      border-image: linear-gradient(to top, var(--color-primary-start), var(--color-primary-end)) 1;
       padding-left: 10px;
     }
     .kontak-nama {
       font-weight: 600;
-      color: #111;
+      color: #ffffff; 
       margin-bottom: 3px;
     }
     .kontak-pesan-terakhir {
       font-size: 0.8rem;
-      color: #666;
+      color: #cccccc; 
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
 
 
-    /* KOLOM KANAN: Ruang Chat */
     #ruang-chat {
       flex: 1;
       display: flex;
@@ -115,32 +117,46 @@
     }
 
     #chat-header {
+      display: none; 
+      
       background: #ffffff;
       padding: 15px;
       border-bottom: 1px solid var(--color-border);
       font-weight: 600;
       color: #333;
-      display: flex;
       justify-content: space-between;
       align-items: center;
     }
     
     #header-actions {
-        display: flex;
+        display: none; 
         gap: 8px;
     }
     .header-action-btn {
         background: none;
-        color: var(--color-primary);
-        border: 1px solid var(--color-primary);
+        color: transparent; 
+        border: 1px solid;
+        border-image: var(--gradient-primary) 1;
         padding: 5px 8px;
         border-radius: 5px;
         cursor: pointer;
         font-weight: 600;
         font-size: 0.9rem;
+        background-clip: padding-box;
+        -webkit-background-clip: padding-box;
     }
     .header-action-btn:hover {
-        background: rgba(0, 128, 105, 0.1);
+        background: rgba(32, 201, 151, 0.1); 
+    }
+    .header-action-btn:hover span {
+        color: var(--color-primary-start);
+    }
+    
+    .gradient-text {
+        background: var(--gradient-primary);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
     }
 
 
@@ -151,18 +167,16 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      /* BACKGROUND BARU (Gaya WhatsApp) */
-      background: #e5ddd5; 
-      background-image: url("https://i.ibb.co/4YZRcdt/wa-bg.png"); 
+      background: #ffffff; 
+      background-image: none;
       background-size: 300px; 
     }
     #chat-box.disabled {
-      background-color: #e5ddd5;
+      background-color: #ffffff;
       opacity: 0.7;
       pointer-events: none;
     }
 
-    /* Tampilan Pesan */
     .pesan-umum {
         max-width: 60%;
         padding: 10px 15px;
@@ -196,7 +210,10 @@
 
     .pengirim-nama {
         font-weight: 700;
-        color: var(--color-primary); 
+        color: transparent;
+        background: var(--gradient-primary); 
+        background-clip: text;
+        -webkit-background-clip: text;
         margin-bottom: 4px;
         font-size: 0.8rem;
     }
@@ -213,7 +230,6 @@
         color: #999;
     }
 
-    /* Bubble Balasan */
     .reply-bubble {
         font-size: 0.8rem;
         color: #555;
@@ -229,7 +245,6 @@
         line-height: 1.2;
     }
 
-    /* Preview Balasan di Input */
     #reply-preview {
         display: none;
         background: #f0f0f0;
@@ -242,7 +257,13 @@
         width: calc(100% - 20px);
     }
 
-    #reply-preview span { font-weight: bold; color: var(--color-primary); }
+    #reply-preview span { 
+        font-weight: bold; 
+        color: transparent;
+        background: var(--gradient-primary); 
+        background-clip: text;
+        -webkit-background-clip: text;
+    }
 
     #reply-preview button {
         float: right;
@@ -255,7 +276,6 @@
     }
 
 
-    /* Input Form */
     #chat-form {
       display: flex;
       flex-direction: column; 
@@ -282,7 +302,7 @@
     }
     #kirim-btn {
       margin-left: 10px;
-      background: var(--color-primary);
+      background: var(--gradient-primary);
       color: white;
       border: none;
       width: 40px;
@@ -300,7 +320,6 @@
         cursor: default;
     }
     
-    /* Konfirmasi Hapus */
     #custom-confirm-overlay {
         position: fixed;
         top: 0;
@@ -347,21 +366,12 @@
     
     <aside id="sidebar-kontak">
       <header id="sidebar-header">Pesan
-          <div id="header-actions-placeholder"></div>
-      </header>
+          </header>
       <div id="daftar-kontak">
         </div>
     </aside>
 
     <main id="ruang-chat">
-      <header id="chat-header">
-        Pilih kontak di sebelah kiri untuk memulai chat.
-        <div id="header-actions" style="display:none;">
-            <button id="header-delete-btn" class="header-action-btn">🗑 Hapus</button>
-            <button id="header-reply-btn" class="header-action-btn">↩ Balas</button>
-        </div>
-      </header>
-
       <div id="chat-box" class="disabled">
         </div>
       
@@ -405,7 +415,7 @@
     const USERNAME_PUSAT = "Pusat (A)";
 
     const chatBox = document.getElementById("chat-box");
-    const chatHeader = document.getElementById("chat-header");
+    // const chatHeader = document.getElementById("chat-header"); // Dihapus
     const daftarKontak = document.getElementById("daftar-kontak");
     const messageInput = document.getElementById("message-input");
     const chatForm = document.getElementById("chat-form");
@@ -417,12 +427,12 @@
     const confirmYes = document.getElementById("confirm-yes");
     const confirmNo = document.getElementById("confirm-no");
     
-    const headerActions = document.getElementById("header-actions");
-    const headerDeleteBtn = document.getElementById("header-delete-btn");
-    const headerReplyBtn = document.getElementById("header-reply-btn");
-    const adminPlaceholder = document.getElementById("header-actions-placeholder");
-
-
+    // const headerActions = document.getElementById("header-actions"); // Dihapus dari penggunaan ini
+    // const headerDeleteBtn = document.getElementById("header-delete-btn"); // Dihapus dari penggunaan ini
+    // const headerReplyBtn = document.getElementById("header-reply-btn"); // Dihapus dari penggunaan ini
+    // const adminPlaceholder = document.getElementById("header-actions-placeholder"); // Dihapus
+    
+    // --- Variabel State ---
     let kontakMap = {};
     let aktifKontakUID = null;
     let aktifKontakNama = null;
@@ -431,9 +441,7 @@
     let replyTo = null; 
     let currentAdmin = { uid: USER_ID_PUSAT, displayName: USERNAME_PUSAT };
     
-    adminPlaceholder.textContent = `Admin: ${USERNAME_PUSAT}`;
-    
-    // --- FUNGSI UTILITY ---
+    // adminPlaceholder.textContent = `Admin: ${USERNAME_PUSAT}`; // Dihapus
     
     let confirmKeydownHandler = null; 
     function showCustomConfirm(message, callback) {
@@ -448,7 +456,6 @@
             callback(isConfirmed);
         };
 
-        // Tambahkan fungsi Enter
         confirmKeydownHandler = (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault(); 
@@ -463,11 +470,14 @@
     }
     
     function updateHeaderActions(isSelected) {
+        // Logika ini dinonaktifkan karena header dihapus, namun dikosongkan jika nanti butuh aksi lain
+        /*
         if (isSelected && aktifKontakUID) {
             headerActions.style.display = 'flex';
         } else {
             headerActions.style.display = 'none';
         }
+        */
     }
     
     function handleMessageSelection(key, data) {
@@ -496,8 +506,8 @@
       replyPreview.style.display = "none";
     }
 
-    // --- EVENT LISTENERS HAPUS & BALAS ---
-
+    // Event listeners header dihapus karena header dihapus, asumsikan aksi delete/reply hanya dari konteks menu/logika lain
+    /*
     headerDeleteBtn.addEventListener("click", () => {
         if (!selectedMessageKey || !aktifKontakUID) return;
         
@@ -524,6 +534,7 @@
         
         replyPreview.innerHTML = "";
         const span = document.createElement("span");
+        span.className = 'gradient-text';
         span.textContent = replyTo.nama;
         replyPreview.appendChild(span);
         replyPreview.appendChild(document.createTextNode(": " + data.teks));
@@ -538,9 +549,9 @@
         
         handleMessageSelection(selectedMessageKey, null); 
     });
+    */
 
 
-    // Auto resize input
     messageInput.addEventListener("input", () => {
         messageInput.style.height = "auto";
         messageInput.style.height = (messageInput.scrollHeight) + "px";
@@ -553,7 +564,6 @@
     });
 
 
-    // --- FUNGSI KIRIM PESAN DARI A (DITINGKATKAN DENGAN REPLY) ---
     chatForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const message = messageInput.value.trim();
@@ -578,7 +588,6 @@
         }
     });
 
-    // --- FUNGSI TAMPILAN PESAN (DITINGKATKAN DENGAN SELEKSI & REPLY BUBBLE) ---
 
     function renderPesan(pesanData) {
         chatBox.innerHTML = '';
@@ -599,7 +608,13 @@
             if (data.replyTo) {
                 const replyEl = document.createElement("div");
                 replyEl.className = "reply-bubble";
-                replyEl.textContent = data.replyTo.nama + ": " + data.replyTo.teks;
+                
+                const replyNameSpan = document.createElement("span");
+                replyNameSpan.className = 'gradient-text'; 
+                replyNameSpan.textContent = data.replyTo.nama;
+                replyEl.appendChild(replyNameSpan);
+                replyEl.appendChild(document.createTextNode(": " + data.replyTo.teks));
+                
                 el.appendChild(replyEl);
             }
 
@@ -672,8 +687,8 @@
                 aktifKontakUID = uid;
                 aktifKontakNama = namaKontak;
                 
-                chatHeader.innerHTML = `<div>Chat dengan ${aktifKontakNama}</div>`;
-                chatHeader.appendChild(headerActions); 
+                // chatHeader.innerHTML = `<div>Chat dengan ${aktifKontakNama}</div>`; // Dihapus
+                // chatHeader.appendChild(headerActions); // Dihapus
 
                 renderPesan(kontakMap[uid]);
                 renderDaftarKontak(); 
@@ -692,7 +707,6 @@
         });
     }
 
-    // --- LOGIKA FIREBASE ---
     
     db.ref("PesanMasuk").orderByChild("waktu").on("child_added", (snap) => {
       const key = snap.key;
@@ -723,8 +737,8 @@
           aktifKontakUID = targetUID;
           aktifKontakNama = data.pengirim_nama;
           
-          chatHeader.innerHTML = `<div>Chat dengan ${aktifKontakNama}</div>`;
-          chatHeader.appendChild(headerActions); 
+          // chatHeader.innerHTML = `<div>Chat dengan ${aktifKontakNama}</div>`; // Dihapus
+          // chatHeader.appendChild(headerActions); // Dihapus
 
           renderPesan(kontakMap[aktifKontakUID]);
           renderDaftarKontak();
@@ -759,7 +773,7 @@
              renderPesan(kontakMap[aktifKontakUID]);
         } else {
              chatBox.innerHTML = '';
-             chatHeader.innerHTML = 'Pilih kontak di sebelah kiri untuk memulai chat.';
+             // chatHeader.innerHTML = 'Pilih kontak di sebelah kiri untuk memulai chat.'; // Dihapus
              messageInput.disabled = true;
              kirimBtn.disabled = true;
              chatBox.classList.add('disabled');
